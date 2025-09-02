@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeaBouquet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.7s ease-in-out;
+    }
+    .fade-in.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .modal-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(50px);
+      transition: all 0.4s ease-in-out;
+    }
+    .modal-show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md fixed w-full z-10">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="images/zea_logo.png" alt="Logo ZeaBouquet" class="h-10">
+        <span class="text-2xl font-bold text-pink-600">ZeaBouquet</span>
+      </div>
+      <div class="flex items-center space-x-6">
+        <a href="#produk" class="hover:text-pink-600">Produk</a>
+        <a href="#kontak" class="hover:text-pink-600">Kontak</a>
+        <button onclick="toggleCart()" class="relative">
+          🛒
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="h-screen flex flex-col justify-center items-center text-center bg-gradient-to-r from-pink-100 to-pink-300">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 fade-in">Rayakan Momen Spesial dengan ZeaBouquet</h2>
+    <p class="text-lg md:text-xl mb-6 fade-in">Bouquet bunga, snack, dan uang untuk hadiah penuh cinta</p>
+    <a href="#produk" class="bg-pink-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-pink-700 transition fade-in">Lihat Produk</a>
+  </section>
+
+  <!-- Produk -->
+  <section id="produk" class="max-w-7xl mx-auto px-6 py-20">
+    <h3 class="text-3xl font-bold text-center mb-12">Produk Kami</h3>
+    <div class="grid md:grid-cols-3 gap-10">
+      
+      <!-- Produk Card -->
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition fade-in">
+        <img src="images/bouquet-bunga.jpg" alt="Bouquet Bunga" class="w-full h-72 object-cover">
+        <div class="p-6">
+          <h4 class="text-xl font-semibold mb-2">Bouquet Bunga</h4>
+          <p class="text-gray-600 mb-4">Hadiah romantis penuh makna.</p>
+          <p class="font-bold text-pink-600 mb-4">Rp 75.000</p>
+          <button onclick="addToCart('Bouquet Bunga',75000)" class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">Tambah ke Keranjang</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition fade-in">
+        <img src="images/bouquet-snack.jpg" alt="Bouquet Snack" class="w-full h-72 object-cover">
+        <div class="p-6">
+          <h4 class="text-xl font-semibold mb-2">Bouquet Snack</h4>
+          <p class="text-gray-600 mb-4">Isi snack favorit, cocok untuk hadiah unik.</p>
+          <p class="font-bold text-pink-600 mb-4">Rp 50.000</p>
+          <button onclick="addToCart('Bouquet Snack',50000)" class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">Tambah ke Keranjang</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition fade-in">
+        <img src="images/bouquet-uang.jpg" alt="Bouquet Uang" class="w-full h-72 object-cover">
+        <div class="p-6">
+          <h4 class="text-xl font-semibold mb-2">Bouquet Uang</h4>
+          <p class="text-gray-600 mb-4">Hadiah elegan dengan uang asli.</p>
+          <p class="font-bold text-pink-600 mb-4">Rp 100.000</p>
+          <button onclick="addToCart('Bouquet Uang',100000)" class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">Tambah ke Keranjang</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modal Keranjang -->
+  <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center modal-hidden">
+    <div class="bg-white rounded-2xl p-6 w-96 shadow-lg">
+      <h3 class="text-2xl font-bold mb-4">Keranjang Belanja</h3>
+      <ul id="cart-items" class="mb-4 space-y-2"></ul>
+      <p id="cart-total" class="font-bold text-lg mb-4">Total: Rp 0</p>
+
+      <!-- Custom Order -->
+      <div class="mb-4">
+        <label class="block text-sm font-semibold">Warna Bunga / Tema</label>
+        <input id="custom-color" type="text" class="w-full border rounded p-2 mt-1" placeholder="Contoh: Merah, Pink Pastel">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-semibold">Ucapan Kartu</label>
+        <textarea id="custom-note" class="w-full border rounded p-2 mt-1" placeholder="Tulis ucapan Anda..."></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-semibold">Tanggal Kirim</label>
+        <input id="custom-date" type="date" class="w-full border rounded p-2 mt-1">
+      </div>
+
+      <div class="flex justify-between">
+        <button onclick="toggleCart()" class="bg-gray-300 px-4 py-2 rounded-lg">Tutup</button>
+        <button onclick="checkout()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kontak -->
+  <section id="kontak" class="max-w-4xl mx-auto px-6 py-20 text-center">
+    <h3 class="text-3xl font-bold mb-6">Hubungi Kami</h3>
+    <p class="mb-6">Ingin custom bouquet? Hubungi kami langsung.</p>
+    <a href="https://wa.me/6282185874399" target="_blank" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700">Chat via WhatsApp</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-200 text-center py-6">
+    <p>&copy; 2024 ZeaBouquet | All Rights Reserved</p>
+  </footer>
+
+  <script>
+    const cart = [];
+
+    function addToCart(product, price) {
+      const existing = cart.find(item => item.product === product);
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ product, price, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById("cart-count").textContent = cart.reduce((a, b) => a + b.qty, 0);
+      const itemsContainer = document.getElementById("cart-items");
+      itemsContainer.innerHTML = "";
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += item.price * item.qty;
+        itemsContainer.innerHTML += `
+          <li class="flex justify-between items-center">
+            <span>${item.product} x${item.qty}</span>
+            <span>Rp ${(item.price * item.qty).toLocaleString()}</span>
+          </li>`;
+      });
+      document.getElementById("cart-total").textContent = "Total: Rp " + total.toLocaleString();
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById("cart-modal");
+      modal.classList.toggle("modal-show");
+      modal.classList.toggle("modal-hidden");
+    }
+
+    function checkout() {
+      let message = "Halo, saya ingin pesan:%0A";
+      cart.forEach(item => {
+        message += `- ${item.product} x${item.qty} (Rp ${(item.price * item.qty).toLocaleString()})%0A`;
+      });
+
+      const color = document.getElementById("custom-color").value;
+      const note = document.getElementById("custom-note").value;
+      const date = document.getElementById("custom-date").value;
+
+      if (color) message += `%0AWarna/tema: ${color}`;
+      if (note) message += `%0AUcapan: ${note}`;
+      if (date) message += `%0ATanggal Kirim: ${date}`;
+
+      const phone = "6282185874399"; // ganti nomor WhatsApp
+      window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+    }
+
+    // Animasi fade-in saat scroll
+    const faders = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, { threshold: 0.2 });
+    faders.forEach(fade => observer.observe(fade));
+  </script>
+</body>
+</html>
